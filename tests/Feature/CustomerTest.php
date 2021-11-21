@@ -34,6 +34,7 @@ class CustomerTest extends TestCase
                 'user_id' => $this->user->id,
             ])
         );
+        $this->customers = $this->customers->sortBy('name');
     }
 
     public function test_can_view_customers()
@@ -49,6 +50,7 @@ class CustomerTest extends TestCase
                     ->where('document', $this->customers->first()->document)
                     ->where('status', $this->customers->first()->status)
                     ->where('deleted_at', null)
+                    ->etc()
                 )
                 ->has('customers.data.1', fn ($assert) => $assert
                     ->where('id', $this->customers->last()->id)
@@ -56,6 +58,7 @@ class CustomerTest extends TestCase
                     ->where('document', $this->customers->last()->document)
                     ->where('status', $this->customers->last()->status)
                     ->where('deleted_at', null)
+                    ->etc()
                 )
             );
     }
@@ -74,6 +77,7 @@ class CustomerTest extends TestCase
                     ->where('document', $this->customers->first()->document)
                     ->where('status', $this->customers->first()->status)
                     ->where('deleted_at', null)
+                    ->etc()
                 )
             );
     }

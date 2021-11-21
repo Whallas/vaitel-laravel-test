@@ -38,6 +38,7 @@ class NumberTest extends TestCase
         $this->numbers = $this->user->account->numbers()->saveMany(
             Number::factory()->count(2)->make(['customer_id' => $customer->id])
         );
+        $this->numbers = $this->numbers->sortBy('name');
     }
 
     public function test_can_view_numbers()
@@ -52,8 +53,10 @@ class NumberTest extends TestCase
                     ->where('number', $this->numbers->first()->number)
                     ->where('status', $this->numbers->first()->status)
                     ->where('deleted_at', null)
+                    ->etc()
                     ->has('customer', fn ($assert) => $assert
                         ->where('name', 'Example Customer Inc.')
+                        ->etc()
                     )
                 )
                 ->has('numbers.data.1', fn ($assert) => $assert
@@ -61,8 +64,10 @@ class NumberTest extends TestCase
                     ->where('number', $this->numbers->last()->number)
                     ->where('status', $this->numbers->last()->status)
                     ->where('deleted_at', null)
+                    ->etc()
                     ->has('customer', fn ($assert) => $assert
                         ->where('name', 'Example Customer Inc.')
+                        ->etc()
                     )
                 )
             );
@@ -81,8 +86,10 @@ class NumberTest extends TestCase
                     ->where('number', $this->numbers->first()->number)
                     ->where('status', $this->numbers->first()->status)
                     ->where('deleted_at', null)
+                    ->etc()
                     ->has('customer', fn ($assert) => $assert
                         ->where('name', 'Example Customer Inc.')
+                        ->etc()
                     )
                 )
             );
