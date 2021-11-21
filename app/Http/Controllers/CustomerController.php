@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
@@ -14,7 +13,7 @@ class CustomerController extends Controller
     public function index()
     {
         return Inertia::render('Customers/Index', [
-            'filters' => Request::all('search', 'trashed'),
+            'filters'   => Request::all('search', 'trashed'),
             'customers' => user()->account->customers()
                 ->orderBy('name')
                 ->filter(Request::only('search', 'trashed'))

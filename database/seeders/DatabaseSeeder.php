@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
-use App\Models\Number;
 use App\Models\Customer;
+use App\Models\Number;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -24,8 +24,8 @@ class DatabaseSeeder extends Seeder
             User::factory()->raw([
                 'account_id' => $account->id,
                 'first_name' => 'John',
-                'last_name' => 'Doe',
-                'owner' => true,
+                'last_name'  => 'Doe',
+                'owner'      => true,
             ])
         );
 
@@ -34,16 +34,13 @@ class DatabaseSeeder extends Seeder
         $customers = Customer::factory(10)
             ->create([
                 'account_id' => $account->id,
-                'user_id' => $user->id,
+                'user_id'    => $user->id,
             ]);
 
         Number::factory(30)
             ->create([
-                'account_id' => $account->id,
+                'account_id'  => $account->id,
                 'customer_id' => fn () => $customers->random()->id,
             ]);
-            // ->each(function ($number) use ($customers) {
-            //     $number->update(['customer_id' => $customers->random()->id]);
-            // });
     }
 }

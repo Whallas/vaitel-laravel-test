@@ -25,13 +25,13 @@ class NumberTest extends TestCase
         $this->user = User::factory()->create([
             'account_id' => Account::create(['name' => 'Acme Corporation'])->id,
             'first_name' => 'John',
-            'last_name' => 'Doe',
-            'email' => 'johndoe@example.com',
-            'owner' => true,
+            'last_name'  => 'Doe',
+            'email'      => 'johndoe@example.com',
+            'owner'      => true,
         ]);
 
         $customer = $this->user->customers()->save(Customer::factory()->make([
-            'name' => 'Example Customer Inc.',
+            'name'       => 'Example Customer Inc.',
             'account_id' => $this->user->account_id,
         ]));
 

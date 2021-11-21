@@ -26,9 +26,9 @@ class CustomerRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:100'],
+            'name'     => ['required', 'string', 'max:100'],
             'document' => ['required', 'string', 'min:6', 'max:12'],
-            'status' => ['nullable', Rule::in(Customer::ALL_STATUSES)],
+            'status'   => ['nullable', Rule::in(Customer::ALL_STATUSES)],
         ];
     }
 }

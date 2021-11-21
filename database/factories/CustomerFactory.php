@@ -26,9 +26,9 @@ class CustomerFactory extends Factory
         return [
             // 'account_id' => Account::factory(),
             // 'user_id' => User::factory(),
-            'name' => $this->faker->name,
+            'name'     => $this->faker->name,
             'document' => str_replace('-', '', $this->faker->ssn),
-            'status' => $this->faker->randomElement(Customer::ALL_STATUSES),
+            'status'   => $this->faker->randomElement(Customer::ALL_STATUSES),
         ];
     }
 }
