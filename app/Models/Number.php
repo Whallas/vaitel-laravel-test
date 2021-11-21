@@ -5,20 +5,47 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
-class Contact extends Model
+/**
+ * @property int $id
+ * @property int $account_id
+ * @property int $user_id
+ * @property string $number
+ * @property string $status
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon $deleted_at
+ * @property-read Account $account
+ * @property-read User $user
+ * @property-read Customer $customer
+ */
+class Number extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    const ALL_STATUSES = [
+        'active',
+        'inactive',
+        'cancelled',
+    ];
+
+    protected $guarded = [];
 
     public function resolveRouteBinding($value, $field = null)
     {
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
     }
 
-    public function organization()
+    public function account()
     {
-        return $this->belongsTo(Organization::class);
+        return $this->belongsTo(Account::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class)->withTrashed();
     }
 
     public function getNameAttribute()
@@ -38,7 +65,7 @@ class Contact extends Model
                 $query->where('first_name', 'like', '%'.$search.'%')
                     ->orWhere('last_name', 'like', '%'.$search.'%')
                     ->orWhere('email', 'like', '%'.$search.'%')
-                    ->orWhereHas('organization', function ($query) use ($search) {
+                    ->orWhereHas('customer', function ($query) use ($search) {
                         $query->where('name', 'like', '%'.$search.'%');
                     });
             });

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="mb-8 font-bold text-3xl">Organizations</h1>
+    <h1 class="mb-8 font-bold text-3xl">Numbers</h1>
     <div class="mb-6 flex justify-between items-center">
       <search-filter v-model="form.search" class="w-full max-w-md mr-4" @reset="reset">
         <label class="block text-gray-700">Trashed:</label>
@@ -10,47 +10,49 @@
           <option value="only">Only Trashed</option>
         </select>
       </search-filter>
-      <inertia-link class="btn-indigo" :href="route('organizations.create')">
+      <inertia-link class="btn-indigo" :href="route('numbers.create')">
         <span>Create</span>
-        <span class="hidden md:inline">Organization</span>
+        <span class="hidden md:inline">Number</span>
       </inertia-link>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
-          <th class="px-6 pt-6 pb-4">Name</th>
-          <th class="px-6 pt-6 pb-4">City</th>
-          <th class="px-6 pt-6 pb-4" colspan="2">Phone</th>
+          <th class="px-6 pt-6 pb-4">Number</th>
+          <th class="px-6 pt-6 pb-4">Customer</th>
+          <th class="px-6 pt-6 pb-4">Status</th>
         </tr>
-        <tr v-for="organization in organizations.data" :key="organization.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+        <tr v-for="number in numbers.data" :key="number.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('organizations.edit', organization.id)">
-              {{ organization.name }}
-              <icon v-if="organization.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-gray-400 ml-2" />
+            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('numbers.edit', number.id)">
+              {{ number.number }}
+              <icon v-if="number.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-gray-400 ml-2" />
             </inertia-link>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('organizations.edit', organization.id)" tabindex="-1">
-              {{ organization.city }}
+            <inertia-link class="px-6 py-4 flex items-center" :href="route('numbers.edit', number.id)" tabindex="-1">
+              <div v-if="number.customer">
+                {{ number.customer.name }}
+              </div>
             </inertia-link>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('organizations.edit', organization.id)" tabindex="-1">
-              {{ organization.phone }}
+            <inertia-link class="px-6 py-4 flex items-center" :href="route('numbers.edit', number.id)" tabindex="-1">
+              {{ number.status }}
             </inertia-link>
           </td>
           <td class="border-t w-px">
-            <inertia-link class="px-4 flex items-center" :href="route('organizations.edit', organization.id)" tabindex="-1">
+            <inertia-link class="px-4 flex items-center" :href="route('numbers.edit', number.id)" tabindex="-1">
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
             </inertia-link>
           </td>
         </tr>
-        <tr v-if="organizations.data.length === 0">
-          <td class="border-t px-6 py-4" colspan="4">No organizations found.</td>
+        <tr v-if="numbers.data.length === 0">
+          <td class="border-t px-6 py-4" colspan="4">No numbers found.</td>
         </tr>
       </table>
     </div>
-    <pagination class="mt-6" :links="organizations.links" />
+    <pagination class="mt-6" :links="numbers.links" />
   </div>
 </template>
 
@@ -64,7 +66,7 @@ import Pagination from '@/Shared/Pagination'
 import SearchFilter from '@/Shared/SearchFilter'
 
 export default {
-  metaInfo: { title: 'Organizations' },
+  metaInfo: { title: 'Numbers' },
   components: {
     Icon,
     Pagination,
@@ -73,7 +75,7 @@ export default {
   layout: Layout,
   props: {
     filters: Object,
-    organizations: Object,
+    numbers: Object,
   },
   data() {
     return {
@@ -87,7 +89,7 @@ export default {
     form: {
       deep: true,
       handler: throttle(function() {
-        this.$inertia.get(this.route('organizations'), pickBy(this.form), { preserveState: true })
+        this.$inertia.get(this.route('numbers.index'), pickBy(this.form), { preserveState: true })
       }, 150),
     },
   },

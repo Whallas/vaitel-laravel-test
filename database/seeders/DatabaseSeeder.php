@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
-use App\Models\Contact;
-use App\Models\Organization;
+use App\Models\Number;
+use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -17,25 +17,33 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $account = Account::create(['name' => 'Acme Corporation']);
+        $account = Account::query()->firstOrCreate(['name' => 'Acme Corporation']);
 
-        User::factory()->create([
-            'account_id' => $account->id,
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'email' => 'johndoe@example.com',
-            'owner' => true,
-        ]);
+        $user = User::query()->firstOrCreate(
+            ['email' => 'johndoe@example.com'],
+            User::factory()->raw([
+                'account_id' => $account->id,
+                'first_name' => 'John',
+                'last_name' => 'Doe',
+                'owner' => true,
+            ])
+        );
 
         User::factory(5)->create(['account_id' => $account->id]);
 
-        $organizations = Organization::factory(100)
-            ->create(['account_id' => $account->id]);
+        $customers = Customer::factory(10)
+            ->create([
+                'account_id' => $account->id,
+                'user_id' => $user->id,
+            ]);
 
-        Contact::factory(100)
-            ->create(['account_id' => $account->id])
-            ->each(function ($contact) use ($organizations) {
-                $contact->update(['organization_id' => $organizations->random()->id]);
-            });
+        Number::factory(30)
+            ->create([
+                'account_id' => $account->id,
+                'customer_id' => fn () => $customers->random()->id,
+            ]);
+            // ->each(function ($number) use ($customers) {
+            //     $number->update(['customer_id' => $customers->random()->id]);
+            // });
     }
 }

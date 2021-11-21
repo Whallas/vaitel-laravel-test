@@ -7,15 +7,15 @@
       </inertia-link>
     </div>
     <div class="mb-4">
-      <inertia-link class="flex items-center group py-3" :href="route('organizations')">
-        <icon name="office" class="w-4 h-4 mr-2" :class="isUrl('organizations') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('organizations') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Organizations</div>
+      <inertia-link class="flex items-center group py-3" :href="route('customers.index')">
+        <icon name="office" class="w-4 h-4 mr-2" :class="isUrl('customers.index') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('customers.index') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Customers</div>
       </inertia-link>
     </div>
     <div class="mb-4">
-      <inertia-link class="flex items-center group py-3" :href="route('contacts')">
-        <icon name="users" class="w-4 h-4 mr-2" :class="isUrl('contacts') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('contacts') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Contacts</div>
+      <inertia-link class="flex items-center group py-3" :href="route('numbers.index')">
+        <icon name="users" class="w-4 h-4 mr-2" :class="isUrl('numbers.index') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('numbers.index') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Numbers</div>
       </inertia-link>
     </div>
     <div class="mb-4">
