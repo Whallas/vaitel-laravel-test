@@ -54,6 +54,9 @@
         ],
         "compile": [
             "@php artisan migrate:fresh --seed"
+        ],
+        "format": [
+            "./vendor/bin/php-cs-fixer fix"
         ]
     },
     "extra": {
