@@ -25,6 +25,7 @@
         "postcss-import": "^12.0.1",
         "postcss-nesting": "^7.0.1",
         "tailwindcss": "^2.0.3",
+        "v-mask": "^2.3.0",
         "vue": "^2.6.11",
         "vue-loader": "^15.9.6",
         "vue-meta": "^2.3.1",

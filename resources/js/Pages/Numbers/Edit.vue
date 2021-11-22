@@ -3,7 +3,7 @@
     <h1 class="mb-8 font-bold text-3xl">
       <inertia-link class="text-indigo-400 hover:text-indigo-600" :href="route('numbers.index')">Numbers</inertia-link>
       <span class="text-indigo-400 font-medium">/</span>
-      {{ number.number }}
+      {{ number.number | VMask($options.mask.formats.phone) }}
     </h1>
     <trashed-message v-if="number.deleted_at" class="mb-6" @restore="restore">
       This number has been deleted.
@@ -17,7 +17,7 @@
       </h2>
       <form @submit.prevent="update">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
-          <text-input v-model="form.number" :error="form.errors.number" class="pr-6 pb-8 w-full lg:w-1/2" label="Number" />
+          <text-input v-model="form.number" v-mask="$options.mask.formats.phone" :error="form.errors.number" class="pr-6 pb-8 w-full lg:w-1/2" label="Number" maxlength="14" />
           <select-input v-model="form.status" :error="form.errors.status" class="pr-6 pb-8 w-full lg:w-1/2" label="Status">
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -39,11 +39,12 @@ import TextInput from '@/Shared/TextInput'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
+import { formats } from '../../utils/mask'
 
 export default {
   metaInfo() {
     return {
-      title: `${this.form.first_name} ${this.form.last_name}`,
+      title: `Customer number ${this.form.number}`,
     }
   },
   components: {
@@ -79,6 +80,9 @@ export default {
         this.$inertia.put(this.route('numbers.restore', this.number.id))
       }
     },
+  },
+  mask: {
+    formats,
   },
 }
 </script>

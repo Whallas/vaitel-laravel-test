@@ -25,7 +25,7 @@
         <tr v-for="number in numbers.data" :key="number.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
             <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('numbers.edit', number.id)">
-              {{ number.number }}
+              {{ number.number | VMask($options.mask.formats.phone) }}
               <icon v-if="number.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-gray-400 ml-2" />
             </inertia-link>
           </td>
@@ -64,6 +64,7 @@ import throttle from 'lodash/throttle'
 import mapValues from 'lodash/mapValues'
 import Pagination from '@/Shared/Pagination'
 import SearchFilter from '@/Shared/SearchFilter'
+import { formats } from '../../utils/mask'
 
 export default {
   metaInfo: { title: 'Numbers' },
@@ -97,6 +98,9 @@ export default {
     reset() {
       this.form = mapValues(this.form, () => null)
     },
+  },
+  mask: {
+    formats,
   },
 }
 </script>

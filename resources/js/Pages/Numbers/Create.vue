@@ -11,7 +11,7 @@
             <option :value="null" />
             <option v-for="customer in customers" :key="customer.id" :value="customer.id">{{ customer.name }}</option>
           </select-input>
-          <text-input v-model="form.number" :error="form.errors.number" class="pr-6 pb-8 lg:w-1/2" label="Number" />
+          <text-input v-model="form.number" v-mask="$options.mask.formats.phone" :error="form.errors.number" class="pr-6 pb-8 lg:w-1/2" label="Number" maxlength="14" />
           <select-input v-model="form.status" :error="form.errors.status" class="pr-6 pb-8 w-full lg:w-1/2" label="Status">
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -30,6 +30,7 @@ import Layout from '@/Shared/Layout'
 import TextInput from '@/Shared/TextInput'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
+import { formats } from '../../utils/mask'
 
 export default {
   metaInfo: { title: 'Create Number' },
@@ -56,6 +57,9 @@ export default {
     store() {
       this.form.post(this.route('numbers.store'))
     },
+  },
+  mask: {
+    formats,
   },
 }
 </script>

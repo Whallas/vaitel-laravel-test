@@ -36,7 +36,7 @@
         <tr v-for="number in customer.numbers" :key="number.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
             <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('numbers.edit', number.id)">
-              {{ number.number }}
+              {{ number.number | VMask($options.mask.formats.phone) }}
               <icon v-if="number.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-gray-400 ml-2" />
             </inertia-link>
           </td>
@@ -66,6 +66,7 @@ import TextInput from '@/Shared/TextInput'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
+import { formats } from '../../utils/mask'
 
 export default {
   metaInfo() {
@@ -106,6 +107,9 @@ export default {
         this.$inertia.put(this.route('customers.restore', this.customer.id))
       }
     },
+  },
+  mask: {
+    formats,
   },
 }
 </script>
