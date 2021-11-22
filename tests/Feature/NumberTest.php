@@ -38,7 +38,7 @@ class NumberTest extends TestCase
         $this->numbers = $this->user->account->numbers()->saveMany(
             Number::factory()->count(2)->make(['customer_id' => $customer->id])
         );
-        $this->numbers = $this->numbers->sortBy('name');
+        $this->numbers = $this->numbers->sortBy('updated_at');
     }
 
     public function test_can_view_numbers()

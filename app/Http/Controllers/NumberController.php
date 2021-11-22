@@ -16,7 +16,7 @@ class NumberController extends Controller
             'filters' => Request::all('search', 'trashed'),
             'numbers' => user()->account->numbers()
                 ->with(['customer' => fn ($query) => $query->select('id', 'name')])
-                ->orderByName()
+                ->orderBy('updated_at')
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString(),
