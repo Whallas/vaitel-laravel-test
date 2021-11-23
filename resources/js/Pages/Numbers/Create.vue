@@ -42,13 +42,17 @@ export default {
   layout: Layout,
   props: {
     customers: Array,
+    customerId: {
+      type: [Number, String],
+      default: null,
+    },
   },
   remember: 'form',
   data() {
     return {
       form: this.$inertia.form({
         number: null,
-        customer_id: null,
+        customer_id: this.customerId,
         status: 'active',
       }),
     }

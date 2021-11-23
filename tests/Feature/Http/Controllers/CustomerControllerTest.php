@@ -23,7 +23,9 @@ class CustomerControllerTest extends FeatureTestCase
 
         $this->actingAs($user)
             ->post(route('customers.store', $customerData))
-            ->assertRedirect();
+            ->assertRedirect(route('numbers.create', [
+                'customer_id' => Customer::latest()->firstOrFail()->id,
+            ]));
 
         $this->assertDatabaseHas('customers', $customerData + [
             'user_id'    => $user->id,

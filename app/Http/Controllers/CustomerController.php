@@ -35,12 +35,13 @@ class CustomerController extends Controller
     {
         $this->authorize('create', Customer::class);
 
-        user()->account->customers()
+        $customer = user()->account->customers()
             ->create(
                 array_merge($request->validated(), ['user_id' => user()->id])
             );
 
-        return Redirect::route('customers.index')->with('success', 'Customer created.');
+        return Redirect::route('numbers.create', ['customer_id' => $customer->id])
+            ->with('success', 'Customer created.');
     }
 
     public function edit(Customer $customer)

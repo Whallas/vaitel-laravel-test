@@ -30,10 +30,11 @@ class NumberController extends Controller
         $this->authorize('create', Number::class);
 
         return Inertia::render('Numbers/Create', [
-            'customers' => user()->account
+            'customers'  => user()->account
                 ->customers()
                 ->orderBy('name')
                 ->get(),
+            'customerId' => request('customer_id'),
         ]);
     }
 
