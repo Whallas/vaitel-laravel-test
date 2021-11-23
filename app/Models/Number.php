@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Events\NumberCreated;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -19,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property-read Account $account
  * @property-read User $user
  * @property-read Customer $customer
+ * @property-read Collection|NumberPreference[] $preferences
  */
 class Number extends Model
 {
@@ -33,6 +36,10 @@ class Number extends Model
 
     protected $guarded = [];
 
+    protected $dispatchesEvents = [
+        'created' => NumberCreated::class,
+    ];
+
     public function resolveRouteBinding($value, $field = null)
     {
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
@@ -46,6 +53,11 @@ class Number extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class)->withTrashed();
+    }
+
+    public function preferences()
+    {
+        return $this->hasMany(NumberPreference::class);
     }
 
     public function getNameAttribute()
