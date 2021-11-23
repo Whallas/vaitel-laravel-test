@@ -12,6 +12,8 @@ class CustomerController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Customer::class);
+
         return Inertia::render('Customers/Index', [
             'filters'   => Request::all('search', 'trashed'),
             'customers' => user()->account->customers()
@@ -24,11 +26,15 @@ class CustomerController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Customer::class);
+
         return Inertia::render('Customers/Create');
     }
 
     public function store(CustomerRequest $request)
     {
+        $this->authorize('create', Customer::class);
+
         user()->account->customers()
             ->create(
                 array_merge($request->validated(), ['user_id' => user()->id])
@@ -39,6 +45,8 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer)
     {
+        $this->authorize('update', $customer);
+
         return Inertia::render('Customers/Edit', [
             'customer' => $customer->load([
                 'numbers' => fn ($query) => $query->withTrashed()->orderBy('name'),
@@ -48,6 +56,7 @@ class CustomerController extends Controller
 
     public function update(Customer $customer, CustomerRequest $request)
     {
+        $this->authorize('update', $customer);
         $customer->update($request->validated());
 
         return Redirect::back()->with('success', 'Customer updated.');
@@ -55,6 +64,7 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
+        $this->authorize('delete', $customer);
         $customer->delete();
 
         return Redirect::back()->with('success', 'Customer deleted.');
@@ -62,6 +72,7 @@ class CustomerController extends Controller
 
     public function restore(Customer $customer)
     {
+        $this->authorize('restore', $customer);
         $customer->restore();
 
         return Redirect::back()->with('success', 'Customer restored.');

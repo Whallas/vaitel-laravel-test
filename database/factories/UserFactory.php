@@ -55,12 +55,19 @@ class UserFactory extends Factory
         });
     }
 
-    public function asAccountUser(array | string $permissions)
+    public function asAccountUser(array | string $permissions = null)
     {
         return $this->afterCreating(
             function (User $user) use ($permissions) {
                 $user->syncRoles('account_user')->syncPermissions($permissions);
             }
         );
+    }
+
+    public function as(string $role, array | string $permissions = null)
+    {
+        return $this->afterCreating(fn (User $user) => (
+            $user->syncRoles($role)->syncPermissions($permissions)
+        ));
     }
 }
