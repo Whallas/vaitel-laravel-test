@@ -31,7 +31,6 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password'          => 'secret',
             'remember_token'    => Str::random(10),
-            'owner'             => false,
         ];
     }
 
@@ -47,5 +46,21 @@ class UserFactory extends Factory
                 'email_verified_at' => null,
             ];
         });
+    }
+
+    public function asAccountOwner()
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->syncRoles('account_owner');
+        });
+    }
+
+    public function asAccountUser(array | string $permissions)
+    {
+        return $this->afterCreating(
+            function (User $user) use ($permissions) {
+                $user->syncRoles('account_user')->syncPermissions($permissions);
+            }
+        );
     }
 }

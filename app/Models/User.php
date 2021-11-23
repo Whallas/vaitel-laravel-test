@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property int $id
@@ -21,12 +22,14 @@ use Illuminate\Support\Facades\Hash;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
+ * @property-read bool $is_account_owner
  * @property-read Account $account
  * @property-read Collection|Customer[] $customers
  */
 class User extends Authenticatable
 {
     use HasFactory;
+    use HasRoles;
     use Notifiable;
     use SoftDeletes;
 
@@ -58,6 +61,11 @@ class User extends Authenticatable
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = Hash::needsRehash($password) ? Hash::make($password) : $password;
+    }
+
+    public function getIsAccountOwnerAttribute()
+    {
+        return $this->hasRole('account_owner');
     }
 
     public function isDemoUser()

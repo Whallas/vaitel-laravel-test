@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call(RolePermissionSeeder::class);
+
         $account = Account::query()->firstOrCreate(['name' => 'Acme Corporation']);
 
         $user = User::query()->firstOrCreate(
@@ -25,11 +27,23 @@ class DatabaseSeeder extends Seeder
                 'account_id' => $account->id,
                 'first_name' => 'John',
                 'last_name'  => 'Doe',
-                'owner'      => true,
             ])
         );
+        $user->syncRoles(['account_owner']);
 
-        User::factory(5)->create(['account_id' => $account->id]);
+        User::factory(5)
+            ->asAccountUser(
+                collect(['customer', 'number', 'number_preference'])
+                    ->random(mt_rand(0, 3))
+                    ->mapWithKeys(function (string $permission) {
+                        return collect(['view', 'create', 'update'])
+                            ->random(mt_rand(1, 3))
+                            ->map(fn (string $action) => $permission . '.' . $action)
+                            ->all();
+                    })
+                    ->toArray()
+            )
+            ->create(['account_id' => $account->id]);
 
         $customers = Customer::factory(10)
             ->create([
