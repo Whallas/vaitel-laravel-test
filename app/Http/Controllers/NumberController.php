@@ -12,6 +12,8 @@ class NumberController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Number::class);
+
         return Inertia::render('Numbers/Index', [
             'filters' => Request::all('search', 'trashed'),
             'numbers' => user()->account->numbers()
@@ -25,6 +27,8 @@ class NumberController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Number::class);
+
         return Inertia::render('Numbers/Create', [
             'customers' => user()->account
                 ->customers()
@@ -35,6 +39,7 @@ class NumberController extends Controller
 
     public function store(NumberRequest $request)
     {
+        $this->authorize('create', Number::class);
         user()->account->numbers()->create($request->validated());
 
         return Redirect::route('numbers.index')->with('success', 'Number created.');
@@ -42,6 +47,8 @@ class NumberController extends Controller
 
     public function edit(Number $number)
     {
+        $this->authorize('update', $number);
+
         return Inertia::render('Numbers/Edit', [
             'number' => $number->load(['customer' => fn ($query) => $query->select('id', 'name')]),
         ]);
@@ -49,6 +56,7 @@ class NumberController extends Controller
 
     public function update(Number $number, NumberRequest $request)
     {
+        $this->authorize('update', $number);
         $number->update($request->validated());
 
         return Redirect::back()->with('success', 'Number updated.');
@@ -56,6 +64,7 @@ class NumberController extends Controller
 
     public function destroy(Number $number)
     {
+        $this->authorize('delete', $number);
         $number->delete();
 
         return Redirect::back()->with('success', 'Number deleted.');
@@ -63,6 +72,7 @@ class NumberController extends Controller
 
     public function restore(Number $number)
     {
+        $this->authorize('restore', $number);
         $number->restore();
 
         return Redirect::back()->with('success', 'Number restored.');
