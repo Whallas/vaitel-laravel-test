@@ -1,15 +1,16 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Http\Pages\Numbers;
 
 use App\Models\Account;
 use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\Assert;
 use Tests\TestCase;
 
-class CustomerTest extends TestCase
+class IndexTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -41,7 +42,7 @@ class CustomerTest extends TestCase
     {
         $this->actingAs($this->user)
             ->get(route('customers.index'))
-            ->assertInertia(fn ($assert) => $assert
+            ->assertInertia(fn (Assert $assert) => $assert
                 ->component('Customers/Index')
                 ->has('customers.data', 2)
                 ->has('customers.data.0', fn ($assert) => $assert
@@ -67,7 +68,7 @@ class CustomerTest extends TestCase
     {
         $this->actingAs($this->user)
             ->get(route('customers.index', ['search' => $this->customers->first()->name]))
-            ->assertInertia(fn ($assert) => $assert
+            ->assertInertia(fn (Assert $assert) => $assert
                 ->component('Customers/Index')
                 ->where('filters.search', $this->customers->first()->name)
                 ->has('customers.data', 1)
@@ -88,7 +89,7 @@ class CustomerTest extends TestCase
 
         $this->actingAs($this->user)
             ->get(route('customers.index'))
-            ->assertInertia(fn ($assert) => $assert
+            ->assertInertia(fn (Assert $assert) => $assert
                 ->component('Customers/Index')
                 ->has('customers.data', 1)
                 ->where('customers.data.0.name', $this->customers->last()->name)
@@ -101,7 +102,7 @@ class CustomerTest extends TestCase
 
         $this->actingAs($this->user)
             ->get(route('customers.index', ['trashed' => 'with']))
-            ->assertInertia(fn ($assert) => $assert
+            ->assertInertia(fn (Assert $assert) => $assert
                 ->component('Customers/Index')
                 ->has('customers.data', 2)
                 ->where('customers.data.0.name', $this->customers->first()->name)
