@@ -21,7 +21,12 @@ class NumberController extends Controller
                 ->orderBy('updated_at')
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
-                ->withQueryString(),
+                ->withQueryString()
+                ->through(
+                    fn ($number) => $number
+                        ->setAttribute('can_i_edit', user()->can('update', $number))
+                ),
+            'canCreate' => user()->can('create', Number::class),
         ]);
     }
 
@@ -51,7 +56,10 @@ class NumberController extends Controller
         $this->authorize('update', $number);
 
         return Inertia::render('Numbers/Edit', [
-            'number' => $number->load(['customer' => fn ($query) => $query->select('id', 'name')]),
+            'number' => $number->load([
+                'customer' => fn ($query) => $query->select('id', 'name'),
+                'preferences',
+            ]),
         ]);
     }
 

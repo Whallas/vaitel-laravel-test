@@ -40,7 +40,7 @@
             </component>
           </td>
           <td class="border-t w-px">
-            <inertia-link v-if="getTdComponent(customer)" class="px-4 flex items-center" :href="route('customers.edit', customer.id)" tabindex="-1">
+            <inertia-link v-if="customer.can_edit" class="px-4 flex items-center" :href="route('customers.edit', customer.id)" tabindex="-1">
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
             </inertia-link>
           </td>

@@ -10,7 +10,7 @@
           <option value="only">Only Trashed</option>
         </select>
       </search-filter>
-      <inertia-link class="btn-indigo" :href="route('numbers.create')">
+      <inertia-link v-if="canCreate" class="btn-indigo" :href="route('numbers.create')">
         <span>Create</span>
         <span class="hidden md:inline">Number</span>
       </inertia-link>
@@ -24,25 +24,25 @@
         </tr>
         <tr v-for="number in numbers.data" :key="number.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('numbers.edit', number.id)">
+            <component :is="getTdComponent(number)" class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('numbers.edit', number.id)">
               {{ number.number | VMask($options.mask.formats.phone) }}
               <icon v-if="number.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-gray-400 ml-2" />
-            </inertia-link>
+            </component>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('numbers.edit', number.id)" tabindex="-1">
+            <component :is="getTdComponent(number)" class="px-6 py-4 flex items-center" :href="route('numbers.edit', number.id)" tabindex="-1">
               <div v-if="number.customer">
                 {{ number.customer.name }}
               </div>
-            </inertia-link>
+            </component>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('numbers.edit', number.id)" tabindex="-1">
+            <component :is="getTdComponent(number)" class="px-6 py-4 flex items-center" :href="route('numbers.edit', number.id)" tabindex="-1">
               {{ number.status }}
-            </inertia-link>
+            </component>
           </td>
           <td class="border-t w-px">
-            <inertia-link class="px-4 flex items-center" :href="route('numbers.edit', number.id)" tabindex="-1">
+            <inertia-link v-if="number.can_i_edit" class="px-4 flex items-center" :href="route('numbers.edit', number.id)" tabindex="-1">
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
             </inertia-link>
           </td>
@@ -77,6 +77,7 @@ export default {
   props: {
     filters: Object,
     numbers: Object,
+    canCreate: Boolean,
   },
   data() {
     return {
@@ -89,7 +90,7 @@ export default {
   watch: {
     form: {
       deep: true,
-      handler: throttle(function() {
+      handler: throttle(function () {
         this.$inertia.get(this.route('numbers.index'), pickBy(this.form), { preserveState: true })
       }, 150),
     },
@@ -97,6 +98,9 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    getTdComponent(customer) {
+      return customer.can_i_edit ? 'inertia-link' : 'span'
     },
   },
   mask: {
