@@ -1,8 +1,10 @@
 # Blast/Vaitel CRM
 
+Vaitel/Blast laravel test.
+
 A demo application to illustrate how Inertia.js works.
 
-![](https://raw.githubusercontent.com/inertiajs/blast-vaitel-crm/master/screenshot.png)
+![](https://raw.githubusercontent.com/inertiajs/blast-vaitel-crm/master/presentation.gif)
 
 ## Installation
 
@@ -49,16 +51,10 @@ Create an SQLite database. You can also use another database (MySQL, Postgres), 
 touch database/database.sqlite
 ```
 
-Run database migrations:
+Run database migrations and seeders:
 
 ```sh
-php artisan migrate
-```
-
-Run database seeder:
-
-```sh
-php artisan db:seed
+php artisan migrate --seed
 ```
 
 Run the dev server (the output will give the address):
@@ -72,10 +68,11 @@ You're ready to go! Visit Blast/Vaitel CRM in your browser, and login with:
 - **Username:** johndoe@example.com
 - **Password:** secret
 
+#
 ## Running tests
 
 To run the Blast/Vaitel CRM tests, run:
 
 ```
-phpunit
+php artisan test
 ```
