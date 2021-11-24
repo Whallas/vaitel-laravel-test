@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Customer;
+use App\Models\Number;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -49,6 +51,9 @@ class HandleInertiaRequests extends Middleware
                             'id'   => $request->user()->account->id,
                             'name' => $request->user()->account->name,
                         ],
+                        'canViewCustomers'      => user()->can('viewAny', Customer::class),
+                        'canViewNumbers'        => user()->can('viewAny', Number::class),
+                        'canManageAccountUsers' => user()->is_account_owner,
                     ] : null,
                 ];
             },

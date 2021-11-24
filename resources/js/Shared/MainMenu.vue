@@ -6,22 +6,16 @@
         <div :class="isUrl('') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Dashboard</div>
       </inertia-link>
     </div>
-    <div class="mb-4">
+    <div v-if="user.canViewCustomers" class="mb-4">
       <inertia-link class="flex items-center group py-3" :href="route('customers.index')">
         <icon name="office" class="w-4 h-4 mr-2" :class="isUrl('customers.index') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('customers.index') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Customers</div>
       </inertia-link>
     </div>
-    <div class="mb-4">
+    <div v-if="user.canViewNumbers" class="mb-4">
       <inertia-link class="flex items-center group py-3" :href="route('numbers.index')">
         <icon name="users" class="w-4 h-4 mr-2" :class="isUrl('numbers.index') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('numbers.index') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Numbers</div>
-      </inertia-link>
-    </div>
-    <div class="mb-4">
-      <inertia-link class="flex items-center group py-3" :href="route('reports')">
-        <icon name="printer" class="w-4 h-4 mr-2" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Reports</div>
       </inertia-link>
     </div>
   </div>
@@ -34,13 +28,18 @@ export default {
   components: {
     Icon,
   },
+  computed: {
+    user() {
+      return this.$page.props.auth.user
+    },
+  },
   methods: {
     isUrl(...urls) {
       let currentUrl = this.$page.url.substr(1)
-      if (urls[0] === '') {
-        return currentUrl === ''
+      if (currentUrl === '') {
+        return urls.filter(url => url === currentUrl).length
       }
-      return urls.filter(url => currentUrl.startsWith(url)).length
+      return urls.filter(url => url.startsWith(currentUrl)).length
     },
   },
 }

@@ -14,6 +14,8 @@ class UsersController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', User::class);
+
         return Inertia::render('Users/Index', [
             'filters' => Request::all('search', 'role', 'trashed'),
             'users'   => user()->account->users()
@@ -34,6 +36,8 @@ class UsersController extends Controller
 
     public function create()
     {
+        $this->authorize('create', User::class);
+
         return Inertia::render('Users/Create', [
             'permissions' => app(PermissionRegistrar::class)->getPermissions()->pluck('name'),
         ]);
@@ -41,6 +45,8 @@ class UsersController extends Controller
 
     public function store()
     {
+        $this->authorize('create', User::class);
+
         Request::validate([
             'first_name'  => ['required', 'max:50'],
             'last_name'   => ['required', 'max:50'],
@@ -70,6 +76,8 @@ class UsersController extends Controller
 
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
+
         return Inertia::render('Users/Edit', [
             'user' => [
                 'id'          => $user->id,
@@ -87,6 +95,8 @@ class UsersController extends Controller
 
     public function update(User $user)
     {
+        $this->authorize('update', $user);
+
         Request::validate([
             'first_name'  => ['required', 'max:50'],
             'last_name'   => ['required', 'max:50'],
@@ -120,6 +130,7 @@ class UsersController extends Controller
 
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
         $user->delete();
 
         return Redirect::back()->with('success', 'User deleted.');
@@ -127,6 +138,7 @@ class UsersController extends Controller
 
     public function restore(User $user)
     {
+        $this->authorize('restore', $user);
         $user->restore();
 
         return Redirect::back()->with('success', 'User restored.');
