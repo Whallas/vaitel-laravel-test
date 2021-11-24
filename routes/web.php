@@ -6,7 +6,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\NumberPreferenceController;
-use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -59,12 +58,6 @@ Route::group(['middleware' =>'auth'], function () {
         )->name("$endpoint.restore");
     }
 });
-
-// Reports
-
-Route::get('reports', [ReportsController::class, 'index'])
-    ->name('reports')
-    ->middleware('auth');
 
 // Images
 Route::get('/img/{path}', [ImagesController::class, 'show'])
