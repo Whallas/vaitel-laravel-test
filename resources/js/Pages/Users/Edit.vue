@@ -18,11 +18,15 @@
           <text-input v-model="form.last_name" :error="form.errors.last_name" class="pr-6 pb-8 w-full lg:w-1/2" label="Last name" />
           <text-input v-model="form.email" :error="form.errors.email" class="pr-6 pb-8 w-full lg:w-1/2" label="Email" />
           <text-input v-model="form.password" :error="form.errors.password" class="pr-6 pb-8 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Password" />
-          <select-input v-model="form.owner" :error="form.errors.owner" class="pr-6 pb-8 w-full lg:w-1/2" label="Owner">
-            <option :value="true">Yes</option>
-            <option :value="false">No</option>
+          <select-input v-if="$page.props.auth.user.id != user.id" v-model="form.role" :error="form.errors.role" class="pr-6 pb-8 w-full lg:w-1/2" label="Role">
+            <option value="account_user">Single user</option>
+            <option value="account_owner">Account Owner</option>
           </select-input>
           <file-input v-model="form.photo" :error="form.errors.photo" class="pr-6 pb-8 w-full lg:w-1/2" type="file" accept="image/*" label="Photo" />
+
+          <select-input v-if="$page.props.auth.user.id != user.id && form.role === 'account_user'" v-model="form.permissions" :error="form.errors.permissions" multiple class="pr-6 pb-8 w-full lg:w-1/2" input-class="h-30 lg:h-60" label="Permissions">
+            <option v-for="(permission, index) in permissions" :key="index" :value="permission">{{ permission }}</option>
+          </select-input>
         </div>
         <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 flex items-center">
           <button v-if="!user.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Delete User</button>
@@ -57,6 +61,10 @@ export default {
   layout: Layout,
   props: {
     user: Object,
+    permissions: {
+      type: Array,
+      default: () => ([]),
+    },
   },
   remember: 'form',
   data() {
@@ -67,10 +75,16 @@ export default {
         last_name: this.user.last_name,
         email: this.user.email,
         password: null,
-        owner: this.user.owner,
         photo: null,
+        role: this.user.role,
+        permissions: this.user.permissions,
       }),
     }
+  },
+  watch: {
+    'form.role': function () {
+      this.form.permissions = []
+    },
   },
   methods: {
     update() {

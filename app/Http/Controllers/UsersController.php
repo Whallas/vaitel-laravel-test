@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Spatie\Permission\PermissionRegistrar;
 
 class UsersController extends Controller
 {
@@ -17,7 +16,8 @@ class UsersController extends Controller
     {
         return Inertia::render('Users/Index', [
             'filters' => Request::all('search', 'role', 'trashed'),
-            'users'   => Auth::user()->account->users()
+            'users'   => user()->account->users()
+                ->whereKeyNot(user()->id)
                 ->orderByName()
                 ->filter(Request::only('search', 'role', 'trashed'))
                 ->get()
@@ -25,7 +25,7 @@ class UsersController extends Controller
                     'id'         => $user->id,
                     'name'       => $user->name,
                     'email'      => $user->email,
-                    'owner'      => $user->owner,
+                    'owner'      => $user->is_account_owner,
                     'photo'      => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
                     'deleted_at' => $user->deleted_at,
                 ]),
@@ -34,28 +34,36 @@ class UsersController extends Controller
 
     public function create()
     {
-        return Inertia::render('Users/Create');
+        return Inertia::render('Users/Create', [
+            'permissions' => app(PermissionRegistrar::class)->getPermissions()->pluck('name'),
+        ]);
     }
 
     public function store()
     {
         Request::validate([
-            'first_name' => ['required', 'max:50'],
-            'last_name'  => ['required', 'max:50'],
-            'email'      => ['required', 'max:50', 'email', Rule::unique('users')],
-            'password'   => ['nullable'],
-            'owner'      => ['required', 'boolean'],
+            'first_name'  => ['required', 'max:50'],
+            'last_name'   => ['required', 'max:50'],
+            'email'       => ['required', 'max:50', 'email', Rule::unique('users')],
+            'password'    => ['nullable'],
+            'role'        => ['required', 'in:account_owner,account_user'],
+            'permissions' => [
+                'array',
+                'nullable',
+                'exclude_if:role,account_owner',
+                'exists:permissions,name',
+            ],
             'photo'      => ['nullable', 'image'],
         ]);
 
-        Auth::user()->account->users()->create([
+        user()->account->users()->create([
             'first_name' => Request::get('first_name'),
             'last_name'  => Request::get('last_name'),
             'email'      => Request::get('email'),
             'password'   => Request::get('password'),
-            'owner'      => Request::get('owner'),
             'photo_path' => Request::file('photo') ? Request::file('photo')->store('users') : null,
-        ]);
+        ])->syncRoles(Request::get('role'))
+            ->syncPermissions(Request::get('permissions'));
 
         return Redirect::route('users.index')->with('success', 'User created.');
     }
@@ -64,29 +72,33 @@ class UsersController extends Controller
     {
         return Inertia::render('Users/Edit', [
             'user' => [
-                'id'         => $user->id,
-                'first_name' => $user->first_name,
-                'last_name'  => $user->last_name,
-                'email'      => $user->email,
-                'owner'      => $user->owner,
-                'photo'      => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
-                'deleted_at' => $user->deleted_at,
+                'id'          => $user->id,
+                'first_name'  => $user->first_name,
+                'last_name'   => $user->last_name,
+                'email'       => $user->email,
+                'role'        => $user->getRoleNames()[0] ?? null,
+                'permissions' => $user->getPermissionNames(),
+                'photo'       => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
+                'deleted_at'  => $user->deleted_at,
             ],
+            'permissions' => app(PermissionRegistrar::class)->getPermissions()->pluck('name'),
         ]);
     }
 
     public function update(User $user)
     {
-        if (App::environment('demo') && $user->isDemoUser()) {
-            return Redirect::back()->with('error', 'Updating the demo user is not allowed.');
-        }
-
         Request::validate([
-            'first_name' => ['required', 'max:50'],
-            'last_name'  => ['required', 'max:50'],
-            'email'      => ['required', 'max:50', 'email', Rule::unique('users')->ignore($user->id)],
-            'password'   => ['nullable'],
-            'owner'      => ['required', 'boolean'],
+            'first_name'  => ['required', 'max:50'],
+            'last_name'   => ['required', 'max:50'],
+            'email'       => ['required', 'max:50', 'email', Rule::unique('users')->ignore($user->id)],
+            'password'    => ['nullable'],
+            'role'        => ['required', 'in:account_owner,account_user'],
+            'permissions' => [
+                'array',
+                'nullable',
+                'exclude_if:role,account_owner',
+                'exists:permissions,name',
+            ],
             'photo'      => ['nullable', 'image'],
         ]);
 
@@ -100,15 +112,14 @@ class UsersController extends Controller
             $user->update(['password' => Request::get('password')]);
         }
 
+        $user->syncRoles(Request::get('role'))
+            ->syncPermissions(Request::get('permissions'));
+
         return Redirect::back()->with('success', 'User updated.');
     }
 
     public function destroy(User $user)
     {
-        if (App::environment('demo') && $user->isDemoUser()) {
-            return Redirect::back()->with('error', 'Deleting the demo user is not allowed.');
-        }
-
         $user->delete();
 
         return Redirect::back()->with('success', 'User deleted.');

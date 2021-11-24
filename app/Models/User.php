@@ -25,6 +25,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read bool $is_account_owner
  * @property-read Account $account
  * @property-read Collection|Customer[] $customers
+ * @method static \Database\Factories\UserFactory factory(mixed ...$parameters)
  */
 class User extends Authenticatable
 {
@@ -34,7 +35,6 @@ class User extends Authenticatable
     use SoftDeletes;
 
     protected $casts = [
-        'owner'             => 'boolean',
         'email_verified_at' => 'datetime',
     ];
 
@@ -80,10 +80,7 @@ class User extends Authenticatable
 
     public function scopeWhereRole($query, $role)
     {
-        switch ($role) {
-            case 'user': return $query->where('owner', false);
-            case 'owner': return $query->where('owner', true);
-        }
+        return $query->role("account_{$role}");
     }
 
     public function scopeFilter($query, array $filters)
