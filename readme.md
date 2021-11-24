@@ -4,7 +4,7 @@ Vaitel/Blast laravel test.
 
 A demo application to illustrate how Inertia.js works.
 
-![](https://raw.githubusercontent.com/inertiajs/blast-vaitel-crm/master/presentation.gif)
+![](https://raw.githubusercontent.com/Whallas/vaitel-laravel-test/master/presentation.gif)
 
 ## Installation
 
