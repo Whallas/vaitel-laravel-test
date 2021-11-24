@@ -5,6 +5,7 @@ use App\Http\Controllers\NumberController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\NumberPreferenceController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -46,11 +47,14 @@ Route::group(['middleware' =>'auth'], function () {
         'numbers' => NumberController::class,
     ]);
 
+    Route::resource('number-preferences', NumberPreferenceController::class)
+        ->only(['store', 'update', 'destroy']);
+
     // Restoring routes
-    foreach (['customer', 'number', 'users'] as $controller) {
+    foreach (['customer', 'number', 'users', 'number-preference'] as $controller) {
         $endpoint = Str::plural($controller);
         Route::put(
-            "$endpoint/{" . Str::singular($controller) . '}/restore',
+            "$endpoint/{" . Str::of($controller)->studly()->snake()->singular() . '}/restore',
             ['App\\Http\\Controllers\\' . Str::studly($controller) . 'Controller', 'restore']
         )->name("$endpoint.restore");
     }
