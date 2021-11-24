@@ -20,7 +20,12 @@ class CustomerController extends Controller
                 ->orderBy('name')
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
-                ->withQueryString(),
+                ->withQueryString()
+                ->through(
+                    fn ($customer) => $customer
+                        ->setAttribute('can_edit', user()->can('update', $customer))
+                ),
+            'canCreate' => user()->can('create', Customer::class),
         ]);
     }
 

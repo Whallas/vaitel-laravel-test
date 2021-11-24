@@ -10,7 +10,7 @@
           <option value="only">Only Trashed</option>
         </select>
       </search-filter>
-      <inertia-link class="btn-indigo" :href="route('customers.create')">
+      <inertia-link v-if="canCreate" class="btn-indigo" :href="route('customers.create')">
         <span>Create</span>
         <span class="hidden md:inline">Customer</span>
       </inertia-link>
@@ -24,23 +24,23 @@
         </tr>
         <tr v-for="customer in customers.data" :key="customer.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('customers.edit', customer.id)">
+            <component :is="getTdComponent(customer)" class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('customers.edit', customer.id)">
               {{ customer.name }}
               <icon v-if="customer.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-gray-400 ml-2" />
-            </inertia-link>
+            </component>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('customers.edit', customer.id)" tabindex="-1">
+            <component :is="getTdComponent(customer)" class="px-6 py-4 flex items-center" :href="route('customers.edit', customer.id)" tabindex="-1">
               {{ customer.document }}
-            </inertia-link>
+            </component>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('customers.edit', customer.id)" tabindex="-1">
+            <component :is="getTdComponent(customer)" class="px-6 py-4 flex items-center" :href="route('customers.edit', customer.id)" tabindex="-1">
               {{ customer.status }}
-            </inertia-link>
+            </component>
           </td>
           <td class="border-t w-px">
-            <inertia-link class="px-4 flex items-center" :href="route('customers.edit', customer.id)" tabindex="-1">
+            <inertia-link v-if="getTdComponent(customer)" class="px-4 flex items-center" :href="route('customers.edit', customer.id)" tabindex="-1">
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
             </inertia-link>
           </td>
@@ -74,6 +74,8 @@ export default {
   props: {
     filters: Object,
     customers: Object,
+    canCreate: Boolean,
+    canEdit: Boolean,
   },
   data() {
     return {
@@ -82,6 +84,11 @@ export default {
         trashed: this.filters.trashed,
       },
     }
+  },
+  computed: {
+    user() {
+      return this.$page.props.auth.user
+    },
   },
   watch: {
     form: {
@@ -94,6 +101,9 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    getTdComponent(customer) {
+      return customer.can_edit ? 'inertia-link' : 'span'
     },
   },
 }
