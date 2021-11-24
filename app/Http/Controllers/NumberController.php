@@ -41,9 +41,9 @@ class NumberController extends Controller
     public function store(NumberRequest $request)
     {
         $this->authorize('create', Number::class);
-        user()->account->numbers()->create($request->validated());
+        $number = user()->account->numbers()->create($request->validated());
 
-        return Redirect::route('numbers.index')->with('success', 'Number created.');
+        return Redirect::route('numbers.edit', $number)->with('success', 'Number created.');
     }
 
     public function edit(Number $number)

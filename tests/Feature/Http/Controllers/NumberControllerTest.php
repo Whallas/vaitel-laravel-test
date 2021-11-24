@@ -23,7 +23,7 @@ class NumberControllerTest extends FeatureTestCase
 
         $this->actingAs($user)
             ->post(route('numbers.store', $numberData))
-            ->assertRedirect();
+            ->assertRedirect(route('numbers.edit', Number::latest()->first()));
 
         $this->assertDatabaseHas('numbers', $numberData);
     }
